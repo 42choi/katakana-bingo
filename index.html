@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카타카나 빙고</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1 class="game-title">카타카나 빙고</h1>
+            <div class="game-info">
+                <span class="bingo-count">완성된 빙고: <span id="bingoCount">0</span>/3줄</span>
+            </div>
+        </header>
+
+        <!-- 메인 게임 영역 -->
+        <main class="game-area">
+            <!-- 빙고판 -->
+            <div class="bingo-board" id="bingoBoard">
+                <!-- 5x5 빙고판이 JavaScript로 생성됩니다 -->
+            </div>
+
+            <!-- 컨트롤 버튼들 -->
+            <div class="controls">
+                <button id="newGameBtn" class="btn btn-primary">새 게임 시작</button>
+                <button id="bingoBtn" class="btn btn-success" disabled>빙고!</button>
+            </div>
+        </main>
+
+        <!-- 빙고 완성 효과 오버레이 -->
+        <div class="celebration-overlay" id="celebrationOverlay">
+            <div class="celebration-content">
+                <h2 class="celebration-text">빙고완성!</h2>
+                <div class="fireworks-container" id="fireworksContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 오디오 요소 -->
+    <audio id="celebrationSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBzKS0fPJeSEHLXfH8diJOwkcZrTp5qJGDw9Vm+DyvmIiECuNx/LdiyYFLHfI8N6LNwgZYrjp5aJIDAhSoN/utWQcBzKS0vLJeCEHL3fH8N2IOQkdZrPq5aJGEA5VnN/yvmQiECuOyPPfiSMGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeCEHL3fH8N2IOQkdZrPq5aJGEA5VnN/yvmQiECuOyPPfiSMGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHDCQy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHDCQy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHDCQy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCwlOoODvt2QZHC+Qy/LNeSEGL3fI8N2IOAkdZ7Pq5qJGDg9VnN/yvmMjESuOyfPfiSQGKHfL8N2IPgcbYrfr5qJJCw==" type="audio/wav">
+    </audio>
+
+    <script src="katakana-data.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
