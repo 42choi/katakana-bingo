@@ -310,31 +310,153 @@ class KatakanaBingoGame {
     }
 }
 
-// 게임 초기화 - 더 안전한 초기화
-function initializeGame() {
+// 전역 변수로 게임 인스턴스 저장
+let bingoGame = null;
+
+// 게임 초기화 함수
+function initGame() {
+    console.log('게임 초기화 시작...');
+    
+    // DOM 요소들이 존재하는지 확인
+    const bingoBoard = document.getElementById('bingoBoard');
+    const newGameBtn = document.getElementById('newGameBtn');
+    const bingoBtn = document.getElementById('bingoBtn');
+    
+    if (!bingoBoard || !newGameBtn || !bingoBtn) {
+        console.log('DOM 요소가 아직 준비되지 않음, 0.5초 후 재시도...');
+        setTimeout(initGame, 500);
+        return;
+    }
+    
+    console.log('DOM 요소 확인 완료');
+    
     try {
-        window.bingoGame = new KatakanaBingoGame();
-        console.log('카타카나 빙고 게임이 성공적으로 초기화되었습니다!');
+        bingoGame = new KatakanaBingoGame();
+        console.log('게임 초기화 성공!');
     } catch (error) {
-        console.error('게임 초기화 실패:', error);
-        // 0.5초 후 재시도
-        setTimeout(initializeGame, 500);
+        console.error('게임 초기화 오류:', error);
+        console.log('수동 게임 시작으로 대체');
+        manualStartGame();
     }
 }
 
-// DOM 로딩 완료 후와 window 로딩 완료 후 둘 다 체크
+// 여러 방법으로 초기화 시도
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeGame);
+    document.addEventListener('DOMContentLoaded', initGame);
 } else {
-    initializeGame();
+    initGame();
 }
 
-// 추가 안전장치
-window.addEventListener('load', () => {
-    if (!window.bingoGame) {
-        initializeGame();
+// 추가 보험
+setTimeout(initGame, 1000);
+
+// 전역 함수로 버튼 이벤트 처리 (HTML onclick에서 직접 호출)
+function startNewGameDirect() {
+    console.log('직접 새 게임 시작 호출됨!');
+    
+    if (bingoGame && bingoGame.startNewGame) {
+        bingoGame.startNewGame();
+    } else {
+        console.log('게임 인스턴스가 없음, 수동으로 게임 시작');
+        manualStartGame();
     }
-});
+}
+
+function celebrateBingoDirect() {
+    console.log('직접 빙고 축하 호출됨!');
+    
+    if (bingoGame && bingoGame.celebrateBingo) {
+        bingoGame.celebrateBingo();
+    } else {
+        console.log('게임 인스턴스가 없음');
+    }
+}
+
+// 수동 게임 시작 함수 (백업용)
+function manualStartGame() {
+    console.log('수동 게임 시작');
+    
+    const bingoBoard = document.getElementById('bingoBoard');
+    const bingoCountDisplay = document.getElementById('bingoCount');
+    const bingoBtn = document.getElementById('bingoBtn');
+    
+    if (!bingoBoard) {
+        console.error('빙고판을 찾을 수 없습니다');
+        return;
+    }
+    
+    // 빙고판 초기화
+    bingoBoard.innerHTML = '';
+    
+    // 카타카나 데이터 생성
+    const katakanaData = generateBingoKatakana();
+    
+    // 선택된 셀 추적
+    const selectedCells = new Set();
+    selectedCells.add(12); // FREE 칸
+    
+    // 빙고판 생성
+    katakanaData.forEach((katakana, index) => {
+        const cell = document.createElement('div');
+        cell.className = 'bingo-cell';
+        cell.textContent = katakana;
+        
+        if (katakana === 'FREE') {
+            cell.classList.add('free');
+        } else {
+            cell.addEventListener('click', () => {
+                console.log(`셀 ${index} 클릭: ${katakana}`);
+                
+                if (selectedCells.has(index)) {
+                    selectedCells.delete(index);
+                    cell.classList.remove('selected');
+                } else {
+                    selectedCells.add(index);
+                    cell.classList.add('selected');
+                }
+                
+                // 빙고 라인 확인
+                const bingoLines = checkBingoLines(selectedCells);
+                
+                if (bingoCountDisplay) {
+                    bingoCountDisplay.textContent = bingoLines;
+                }
+                
+                if (bingoBtn) {
+                    bingoBtn.disabled = bingoLines < 3;
+                }
+                
+                console.log(`현재 빙고 라인: ${bingoLines}`);
+            });
+        }
+        
+        bingoBoard.appendChild(cell);
+    });
+    
+    // 초기 상태 설정
+    if (bingoCountDisplay) {
+        bingoCountDisplay.textContent = '0';
+    }
+    if (bingoBtn) {
+        bingoBtn.disabled = true;
+    }
+    
+    console.log('수동 게임 시작 완료!');
+}
+
+// 빙고 라인 확인 함수
+function checkBingoLines(selectedCells) {
+    const lines = [
+        // 가로 라인
+        [0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14], [15, 16, 17, 18, 19], [20, 21, 22, 23, 24],
+        // 세로 라인  
+        [0, 5, 10, 15, 20], [1, 6, 11, 16, 21], [2, 7, 12, 17, 22], [3, 8, 13, 18, 23], [4, 9, 14, 19, 24],
+        // 대각선 라인
+        [0, 6, 12, 18, 24], [4, 8, 12, 16, 20]
+    ];
+    
+    return lines.filter(line => line.every(index => selectedCells.has(index))).length;
+}
 
 // 더 나은 축하 음향을 위한 웹 오디오 API 사용 (선택사항)
 function createCelebrationTone() {
