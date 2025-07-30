@@ -354,11 +354,35 @@ setTimeout(initGame, 1000);
 function startNewGameDirect() {
     console.log('직접 새 게임 시작 호출됨!');
     
+    // 먼저 축하 오버레이 닫기
+    closeCelebrationDirect();
+    
     if (bingoGame && bingoGame.startNewGame) {
         bingoGame.startNewGame();
     } else {
         console.log('게임 인스턴스가 없음, 수동으로 게임 시작');
         manualStartGame();
+    }
+}
+
+// 축하 오버레이 직접 닫기 함수
+function closeCelebrationDirect() {
+    console.log('축하 오버레이 직접 닫기');
+    const celebrationOverlay = document.getElementById('celebrationOverlay');
+    const fireworksContainer = document.getElementById('fireworksContainer');
+    
+    if (celebrationOverlay) {
+        celebrationOverlay.classList.remove('show');
+        celebrationOverlay.style.display = 'none';
+    }
+    
+    if (fireworksContainer) {
+        fireworksContainer.innerHTML = '';
+    }
+    
+    // 게임 활성화
+    if (bingoGame) {
+        bingoGame.gameActive = true;
     }
 }
 
@@ -375,6 +399,9 @@ function celebrateBingoDirect() {
 // 수동 게임 시작 함수 (백업용)
 function manualStartGame() {
     console.log('수동 게임 시작');
+    
+    // 축하 오버레이 닫기
+    closeCelebrationDirect();
     
     const bingoBoard = document.getElementById('bingoBoard');
     const bingoCountDisplay = document.getElementById('bingoCount');
