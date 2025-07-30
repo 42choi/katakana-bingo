@@ -28,30 +28,65 @@ class KatakanaBingoGame {
      * 이벤트 리스너들을 바인딩
      */
     bindEvents() {
-        this.newGameBtn.addEventListener('click', () => this.startNewGame());
-        this.bingoBtn.addEventListener('click', () => this.celebrateBingo());
+        // 새 게임 시작 버튼
+        if (this.newGameBtn) {
+            this.newGameBtn.addEventListener('click', (e) => {
+                console.log('새 게임 시작 버튼 클릭됨!');
+                e.preventDefault();
+                this.startNewGame();
+            });
+            console.log('새 게임 버튼 이벤트 바인딩 완료');
+        } else {
+            console.error('새 게임 버튼을 찾을 수 없습니다!');
+        }
+        
+        // 빙고 버튼
+        if (this.bingoBtn) {
+            this.bingoBtn.addEventListener('click', (e) => {
+                console.log('빙고 버튼 클릭됨!');
+                e.preventDefault();
+                this.celebrateBingo();
+            });
+            console.log('빙고 버튼 이벤트 바인딩 완료');
+        }
         
         // 축하 오버레이 클릭 시 닫기
-        this.celebrationOverlay.addEventListener('click', (e) => {
-            if (e.target === this.celebrationOverlay) {
-                this.closeCelebration();
-            }
-        });
+        if (this.celebrationOverlay) {
+            this.celebrationOverlay.addEventListener('click', (e) => {
+                if (e.target === this.celebrationOverlay) {
+                    console.log('축하 오버레이 클릭으로 닫기');
+                    this.closeCelebration();
+                }
+            });
+        }
     }
 
     /**
      * 새 게임을 시작
      */
     startNewGame() {
+        console.log('새 게임을 시작합니다!');
+        
+        // 게임 상태 초기화
         this.bingoData = generateBingoKatakana();
         this.selectedCells.clear();
         this.bingoLines = 0;
         this.gameActive = true;
         
+        // UI 업데이트
         this.renderBingoBoard();
         this.updateBingoCount();
         this.updateBingoButton();
         this.closeCelebration();
+        
+        // 버튼 상태 명시적 설정
+        if (this.newGameBtn) {
+            this.newGameBtn.disabled = false;
+            this.newGameBtn.style.opacity = '1';
+            this.newGameBtn.style.cursor = 'pointer';
+        }
+        
+        console.log('새 게임 시작 완료!');
     }
 
     /**
@@ -275,9 +310,30 @@ class KatakanaBingoGame {
     }
 }
 
-// 게임 초기화
-document.addEventListener('DOMContentLoaded', () => {
-    window.bingoGame = new KatakanaBingoGame();
+// 게임 초기화 - 더 안전한 초기화
+function initializeGame() {
+    try {
+        window.bingoGame = new KatakanaBingoGame();
+        console.log('카타카나 빙고 게임이 성공적으로 초기화되었습니다!');
+    } catch (error) {
+        console.error('게임 초기화 실패:', error);
+        // 0.5초 후 재시도
+        setTimeout(initializeGame, 500);
+    }
+}
+
+// DOM 로딩 완료 후와 window 로딩 완료 후 둘 다 체크
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeGame);
+} else {
+    initializeGame();
+}
+
+// 추가 안전장치
+window.addEventListener('load', () => {
+    if (!window.bingoGame) {
+        initializeGame();
+    }
 });
 
 // 더 나은 축하 음향을 위한 웹 오디오 API 사용 (선택사항)
